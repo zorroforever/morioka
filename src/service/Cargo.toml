@@ -1,0 +1,15 @@
+[package]
+name = "morioka-service"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+morioka-entity = { path = "../entity" }
+
+[dependencies.sea-orm]
+version = "0.12.14"
+features = [
+    "debug-print",
+    "runtime-async-std-native-tls",
+    "sqlx-mysql",
+]
