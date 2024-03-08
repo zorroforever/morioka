@@ -1,3 +1,5 @@
+mod common;
+
 use std::option::Option;
 use listenfd::ListenFd;
 use serde_json::json;
@@ -85,12 +87,18 @@ async fn fetch_token(
 ) -> Result<HttpResponse, Error> {
     let conn = &data.conn;
     let id = &mix_id;
-    let token = Query::fetch_token_by_mix(conn,id.to_string()).await.unwrap_or(Option::Some("".to_string()));
-    if let Some(a) = token {
-        Ok(HttpResponse::Ok().json(json!({"token": a}).clone()))
+    let key = env::var("ENCRYPTION_KEY").expect("ENCRYPTION_KEY is not set in .env file");
+    if let Ok(_v) = common::decrypt_data(id,&key) {
+        let token = Query::fetch_token_by_mix(conn,_v.to_string()).await.unwrap_or(Option::Some("".to_string()));
+        if let Some(a) = token {
+            Ok(HttpResponse::Ok().json(json!({"token": a}).clone()))
+        } else {
+            Ok(HttpResponse::Ok().json("{}"))
+        }
     } else {
         Ok(HttpResponse::Ok().json("{}"))
     }
+
 }
 
 #[post("/api")]
