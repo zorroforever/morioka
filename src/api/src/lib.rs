@@ -1,35 +1,15 @@
-mod common;
-
-use std::option::Option;
-use listenfd::ListenFd;
-use serde_json::json;
-use serde::{Deserialize, Serialize};
 use std::env;
-
-
 use actix_files::Files as Fs;
 use actix_web::{
-    App, error, Error, get, HttpRequest, HttpResponse, HttpServer, middleware, post, Result, web,
+    App, HttpServer, middleware, web,
 };
-
-use morioka_service::{
-    sea_orm::{Database, DatabaseConnection},
-    Query,
-};
-
-#[derive(Debug, Clone)]
-struct AppState {
-    conn: DatabaseConnection,
-}
-
-#[derive(Debug,Serialize, Deserialize)]
-pub struct MoriokaParams {
-    token: Option<String>,
-    udid: Option<String>,
-    data:Option<String>,
-}
-
-
+use listenfd::ListenFd;
+use morioka_service::sea_orm::Database;
+mod common;
+mod api_0001;
+mod api_0002;
+pub(crate) mod utils;
+pub(crate) mod crypto_util;
 #[actix_web::main]
 async fn start() -> std::io::Result<()> {
     std::env::set_var("RUST_LOG", "debug");
@@ -44,7 +24,7 @@ async fn start() -> std::io::Result<()> {
 
     // establish connection to database and apply migrations
     let conn = Database::connect(&db_url).await.unwrap();
-    let state = AppState {  conn };
+    let state = common::AppState {  conn };
     // create server and try to serve over socket if possible
     let mut listenfd = ListenFd::from_env();
     let mut server = HttpServer::new(move || {
@@ -68,8 +48,8 @@ async fn start() -> std::io::Result<()> {
 }
 
 fn init(cfg: &mut web::ServiceConfig) {
-    cfg.service(fetch_token);
-    cfg.service(api);
+    cfg.service(api_0001::fetch_token);
+    cfg.service(api_0002::api);
 }
 
 pub fn main() {
@@ -80,35 +60,5 @@ pub fn main() {
     }
 }
 
-#[get("/fetch_token/{mix_id}")]
-async fn fetch_token(
-    data: web::Data<AppState>,
-    mix_id: web::Path<String>,
-) -> Result<HttpResponse, Error> {
-    let conn = &data.conn;
-    let id = &mix_id;
-    let key = env::var("ENCRYPTION_KEY").expect("ENCRYPTION_KEY is not set in .env file");
-    if let Ok(_v) = common::decrypt_data(id,&key) {
-        let token = Query::fetch_token_by_mix(conn,_v.to_string()).await.unwrap_or(Option::Some("".to_string()));
-        if let Some(a) = token {
-            Ok(HttpResponse::Ok().json(json!({"token": a}).clone()))
-        } else {
-            Ok(HttpResponse::Ok().json("{}"))
-        }
-    } else {
-        Ok(HttpResponse::Ok().json("{}"))
-    }
 
-}
 
-#[post("/api")]
-async fn api(
-    body: web::Bytes,
-    req: HttpRequest,
-) -> Result<HttpResponse, Error> {
-    println!("enter to api");
-    let item = serde_json::from_slice::<MoriokaParams>(&body)?;
-    println!("model: {item:?}");
-
-    Ok(HttpResponse::Ok().json("{}"))
-}
