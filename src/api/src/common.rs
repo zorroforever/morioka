@@ -1,9 +1,11 @@
+use redis::Connection;
 use serde::{Deserialize, Serialize};
+
 use morioka_service::sea_orm::DatabaseConnection;
 
-#[derive(Debug, Clone)]
 pub struct AppState {
-    pub(crate) conn: DatabaseConnection,
+    pub(crate) db_conn: DatabaseConnection,
+    pub(crate) redis_conn: Connection,
 }
 
 #[derive(Debug,Serialize, Deserialize)]

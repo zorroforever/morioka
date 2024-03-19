@@ -1,8 +1,7 @@
-
 use crypto::aes::{self, KeySize};
 use crypto::blockmodes::PkcsPadding;
 use crypto::buffer::{ReadBuffer, WriteBuffer};
-use crypto::symmetriccipher::{Decryptor, Encryptor};
+// use crypto::symmetriccipher::{Decryptor, Encryptor};
 use rand::Rng;
 
 pub async fn aes_encrypt(plaintext: &[u8], key: &[u8]) -> String  {
@@ -70,18 +69,13 @@ pub async fn aes_decrypt(human_read:&str, key: &[u8]) -> String {
     let plaintext_without_b = &plaintext[..plaintext.len() - random_string_length];
     std::str::from_utf8(&plaintext_without_b).unwrap().to_string()
 }
+
 #[tokio::test]
 async fn  test() {
     let plaintext = b"Hello, world!";
     let key = b"8ea8593bb2e44ccda1ccbb1fa07db5b6";
-
     let ciphertext = aes_encrypt(plaintext, key).await;
-
     println!("Encrypted text: {:?}",  &ciphertext );
-
     let decrypted_text = aes_decrypt(&ciphertext, key).await;
-
-    // let decrypted_string = std::str::from_utf8(&decrypted_text).unwrap();
-
     println!("Decrypted text: {}", decrypted_text);
 }
