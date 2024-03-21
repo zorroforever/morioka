@@ -1,13 +1,14 @@
 My simple RPG server.
-* written by RUST.
-* mysql database
-* redis 
-* make sea-orm entity:
+* Written in RUST.
+* Mysql database.
+* Redis.
+* Actix web framework.
+* Make sea-orm entity:
 
 ```shell
 sea-orm-cli generate entity -u mysql://morioka:moe@localhost/morioka -o entity/src -l
 ```
-* configure
+* Configure
 ```shell
 server host：  
 HOST=127.0.0.1  
