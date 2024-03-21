@@ -1,3 +1,4 @@
+use uuid::Uuid;
 use std::env;
 use std::sync::Arc;
 
@@ -15,7 +16,7 @@ pub async fn fetch_token(
     data: Data<Arc<AsyncRwLock<common::AppState>>>,
     mix_id: web::Path<String>,
 ) -> actix_web::Result<HttpResponse, Error> {
-    let mut app_status = data.get_ref().write().await;
+    let app_status = data.get_ref().write().await;
     let conn = &app_status.db_conn;
     let redis_conn =  &app_status.redis_conn;
     let id = &mix_id;
@@ -30,11 +31,15 @@ pub async fn fetch_token(
         }
     }
     // try to login account
-    let nice_to_login = Query::check_account(conn,source_md5_str).await.unwrap_or(false);
+    let nice_to_login = Query::check_account(conn,&source_md5_str).await.unwrap_or(false);
     if nice_to_login {
-        let t = util::token_util::make_token().await;
-        redis_conn.set_token_with_expiry(&t,"",3600).await;
-        Ok(HttpResponse::Ok().json(json!({"token": t}).clone()))
+        let uuid = Uuid::new_v4();
+        redis_conn.set_token_with_expiry(
+            &uuid.to_string(),
+            &source_md5_str,
+            3600)
+            .await;
+        Ok(HttpResponse::Ok().json(json!({"token": uuid.to_string()}).clone()))
     } else {
         Ok(HttpResponse::Unauthorized().json("{}"))
     }

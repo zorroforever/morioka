@@ -13,7 +13,7 @@ pub async fn api(
     _req: HttpRequest,
 ) -> actix_web::Result<HttpResponse, Error> {
     println!("enter to apitoken={}",&token);
-    let mut app_status = app_data.write().await;
+    let app_status = app_data.write().await;
     let redis_conn = &app_status.redis_conn;
     let token_string: String = token.into_inner();
     let token_is_valid  =redis_conn.check_token_validity(&token_string).await.unwrap_or(false);

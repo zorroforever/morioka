@@ -1,46 +1,47 @@
-use redis::{Commands, Connection, RedisResult};
-use redis_pool::{RedisPool, SingleRedisPool};
+use redis::Client;
 
+use r2d2_redis::{r2d2, RedisConnectionManager};
+use r2d2_redis::redis::Commands;
 pub struct MoriokaRedis {
-    pool:redis_pool::SingleRedisPool,
+    pool: r2d2::Pool<RedisConnectionManager>,
 }
+
 impl MoriokaRedis{
-    pub  fn new(
+    pub fn new(
         redis_url: &str
-    )-> Self {
-        let client = redis::Client::open(redis_url).expect("redis error on open");
-        let pool = RedisPool::from(client);
-        crate::util::redis_util::MoriokaRedis{pool}
+    ) -> Result<Self, Box<dyn std::error::Error + Send + Sync>> {
+        let manager = RedisConnectionManager::new(redis_url)?;
+        let pool = r2d2::Pool::builder().build(manager)?;
+        Ok(MoriokaRedis { pool })
     }
+
     pub async fn set_token_with_expiry(
         &self,
         key: &str,
         value: &str,
         expiry: usize
-    ) -> RedisResult<()> {
-        let mut con = self.pool.aquire().await.unwrap();
-        let _ = con.set_ex(key, value, expiry)?;
+    ) -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
+        let  mut conn = self.pool.get()?;
+        let _ = conn.set_ex(key, value, expiry)?;
         Ok(())
     }
 
     pub async fn check_token_validity(
         &self,
         key: &str
-    ) -> RedisResult<bool> {
-        let mut con = self.pool.aquire().await.unwrap().detach();
-
-        redis::pipe()
-            .exists(key)
-            .execute(&mut con)
-            .await.unwrap()
+    ) -> Result<bool, Box<dyn std::error::Error + Send + Sync>> {
+        let  mut conn = self.pool.get()?;
+        let result = conn.exists(key)?;
+        Ok(result)
     }
 
 
     pub async fn get_val_by_key(
         &self,
         key: &str
-    )-> RedisResult<String> {
-        let mut con = self.pool.aquire().await.unwrap();
-        con.get(key)
+    )-> Result<String, Box<dyn std::error::Error + Send + Sync>> {
+        let mut conn = self.pool.get()?;
+        let res:String = conn.get(key)?;
+        Ok(res)
     }
 }

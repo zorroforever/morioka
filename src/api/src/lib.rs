@@ -28,9 +28,8 @@ async fn start(
     let server_url = format!("{host}:{port}");
     let conn = Database::connect(&db_url).await.unwrap();
     let redis_url = env::var("REDIS_URL").expect("REDIS_URL is not set in .env file");
-    let redis = MoriokaRedis::new(redis_url);
-    // let client = redis::Client::open(redis_url).expect("redis error on open");
-    // let redis_con = client.get_connection().expect("redis error on connect");
+    let redis_box = MoriokaRedis::new(&redis_url);
+    let redis = redis_box.expect("get redis pool error!");
     let app_state = AppState {
         db_conn: conn,
         redis_conn: redis,
