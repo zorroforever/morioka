@@ -21,7 +21,7 @@ impl Query {
 
     pub async fn check_account(
         db: &DbConn,
-        mix_code: String
+        mix_code: &str
     )-> Result<bool, DbErr> {
         let cnt= Account::find()
             .filter(account::Column::MixCode.eq(mix_code))

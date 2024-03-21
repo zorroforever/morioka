@@ -22,4 +22,9 @@ rust-crypto = "0.2"
 hex = { version = "0.4.3", features = [] }
 rand = "0.9.0-alpha.0"
 redis = { version = "0.25.2", features = ["tokio-comp","json"] }
-redis_pool = "0.3.0"
+r2d2_redis = "0.14.0"
+uuid = { version = "1.8.0" ,features = [
+"v4",
+"fast-rng",
+"macro-diagnostics",
+]}
