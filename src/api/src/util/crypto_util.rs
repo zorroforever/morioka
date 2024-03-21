@@ -1,8 +1,10 @@
 use crypto::aes::{self, KeySize};
 use crypto::blockmodes::PkcsPadding;
 use crypto::buffer::{ReadBuffer, WriteBuffer};
+use crypto::digest::Digest;
 // use crypto::symmetriccipher::{Decryptor, Encryptor};
 use rand::Rng;
+use crypto::md5::Md5;
 
 pub async fn aes_encrypt(plaintext: &[u8], key: &[u8]) -> String  {
     let random_string: String = rand::thread_rng()
@@ -70,6 +72,11 @@ pub async fn aes_decrypt(human_read:&str, key: &[u8]) -> String {
     std::str::from_utf8(&plaintext_without_b).unwrap().to_string()
 }
 
+pub async fn md5_encrypt(human_read:&str) -> String {
+    let mut hasher = Md5::new();
+    hasher.input_str(human_read);
+    hasher.result_str()
+}
 #[tokio::test]
 async fn  test() {
     let plaintext = b"Hello, world!";
@@ -78,4 +85,10 @@ async fn  test() {
     println!("Encrypted text: {:?}",  &ciphertext );
     let decrypted_text = aes_decrypt(&ciphertext, key).await;
     println!("Decrypted text: {}", decrypted_text);
+}
+
+#[tokio::test]
+async fn  test_md5() {
+    let ciphertext = md5_encrypt("ud123").await;
+    println!("Encrypted text: {:?}",  &ciphertext );
 }

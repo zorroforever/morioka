@@ -12,6 +12,8 @@ mod logic;
 mod util;
 pub mod common;
 use tokio::sync::RwLock as AsyncRwLock;
+use crate::util::redis_util::MoriokaRedis;
+
 #[actix_web::main]
 async fn start(
 ) ->  Result<(), Box<dyn std::error::Error + Send + Sync>> {
@@ -26,11 +28,12 @@ async fn start(
     let server_url = format!("{host}:{port}");
     let conn = Database::connect(&db_url).await.unwrap();
     let redis_url = env::var("REDIS_URL").expect("REDIS_URL is not set in .env file");
-    let client = redis::Client::open(redis_url).expect("redis error on open");
-    let redis_con = client.get_connection().expect("redis error on connect");
+    let redis = MoriokaRedis::new(redis_url);
+    // let client = redis::Client::open(redis_url).expect("redis error on open");
+    // let redis_con = client.get_connection().expect("redis error on connect");
     let app_state = AppState {
         db_conn: conn,
-        redis_conn: redis_con,
+        redis_conn: redis,
     };
     let app_status = Arc::new(AsyncRwLock::new(app_state));
     // create server and try to serve over socket if possible
@@ -56,8 +59,8 @@ async fn start(
 }
 
 fn init(cfg: &mut web::ServiceConfig) {
-    cfg.service(logic::api_0001::fetch_token);
-    cfg.service(logic::api_0002::api);
+    cfg.service(logic::fetch_token::fetch_token);
+    cfg.service(logic::union_api::api);
 }
 
 pub fn main() {

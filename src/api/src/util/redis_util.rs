@@ -1,35 +1,46 @@
-use redis::{Commands, RedisResult};
+use redis::{Commands, Connection, RedisResult};
+use redis_pool::{RedisPool, SingleRedisPool};
 
-fn set_token_with_expiry(
-    con: &mut redis::Connection,
-    key: &str,
-    value: &str,
-    expiry: usize
-) -> RedisResult<()> {
-    con.set_ex(key, value, expiry)?;
-    Ok(())
+pub struct MoriokaRedis {
+    pool:redis_pool::SingleRedisPool,
 }
-
-fn check_token_validity(
-    con: &mut redis::Connection,
-    key: &str
-) -> RedisResult<bool> {
-    con.exists(key)
-}
-
-#[tokio::test]
-async fn test_redis() -> RedisResult<()> {
-
-    let token_key = "token_key";
-    let token_value = "your_token_value";
-    let client = redis::Client::open("redis://127.0.0.1/")?;
-    let con = client.get_connection()?;
-    set_token_with_expiry(&con, token_key, token_value, 86400)?;
-
-    if check_token_validity(&con, token_key)? {
-        println!("Token valid.");
-    } else {
-        println!("Token out of date.");
+impl MoriokaRedis{
+    pub  fn new(
+        redis_url: &str
+    )-> Self {
+        let client = redis::Client::open(redis_url).expect("redis error on open");
+        let pool = RedisPool::from(client);
+        crate::util::redis_util::MoriokaRedis{pool}
     }
-    Ok(())
+    pub async fn set_token_with_expiry(
+        &self,
+        key: &str,
+        value: &str,
+        expiry: usize
+    ) -> RedisResult<()> {
+        let mut con = self.pool.aquire().await.unwrap();
+        let _ = con.set_ex(key, value, expiry)?;
+        Ok(())
+    }
+
+    pub async fn check_token_validity(
+        &self,
+        key: &str
+    ) -> RedisResult<bool> {
+        let mut con = self.pool.aquire().await.unwrap().detach();
+
+        redis::pipe()
+            .exists(key)
+            .execute(&mut con)
+            .await.unwrap()
+    }
+
+
+    pub async fn get_val_by_key(
+        &self,
+        key: &str
+    )-> RedisResult<String> {
+        let mut con = self.pool.aquire().await.unwrap();
+        con.get(key)
+    }
 }
