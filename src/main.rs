@@ -1,3 +1,3 @@
 fn main() {
-   morioka_api::main();
+    morioka_api::main();
 }
