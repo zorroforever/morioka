@@ -1,19 +1,23 @@
-一个简单的RPG服务器。
-* RUST开发
-* mysql数据库
-* redis缓存
+My simple RPG server.
+* written by RUST.
+* mysql database
+* redis 
 * make sea-orm entity:
 
 ```shell
 sea-orm-cli generate entity -u mysql://morioka:moe@localhost/morioka -o entity/src -l
 ```
-服务器地址：  
+* configure
+```shell
+server host：  
 HOST=127.0.0.1  
-服务器端口：  
+server port：  
 PORT=8000  
-数据库地址：  
+mysql database url:  
 DATABASE_URL="mysql://morioka:moe@localhost/morioka"  
-加密key：  
+encryption key：  
 ENCRYPTION_KEY="8ea8593bb2e44ccda1ccbb1fa07db5b6"  
-redis地址：  
-REDIS_URL="redis://127.0.0.1/"  
+redis url：  
+REDIS_URL="redis://127.0.0.1/" 
+```
+ 
