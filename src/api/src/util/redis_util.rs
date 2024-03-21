@@ -1,12 +1,11 @@
-use redis::Client;
-
 use r2d2_redis::{r2d2, RedisConnectionManager};
 use r2d2_redis::redis::Commands;
+
 pub struct MoriokaRedis {
     pool: r2d2::Pool<RedisConnectionManager>,
 }
 
-impl MoriokaRedis{
+impl MoriokaRedis {
     pub fn new(
         redis_url: &str
     ) -> Result<Self, Box<dyn std::error::Error + Send + Sync>> {
@@ -19,18 +18,18 @@ impl MoriokaRedis{
         &self,
         key: &str,
         value: &str,
-        expiry: usize
+        expiry: usize,
     ) -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
-        let  mut conn = self.pool.get()?;
+        let mut conn = self.pool.get()?;
         let _ = conn.set_ex(key, value, expiry)?;
         Ok(())
     }
 
     pub async fn check_token_validity(
         &self,
-        key: &str
+        key: &str,
     ) -> Result<bool, Box<dyn std::error::Error + Send + Sync>> {
-        let  mut conn = self.pool.get()?;
+        let mut conn = self.pool.get()?;
         let result = conn.exists(key)?;
         Ok(result)
     }
@@ -38,10 +37,10 @@ impl MoriokaRedis{
 
     pub async fn get_val_by_key(
         &self,
-        key: &str
-    )-> Result<String, Box<dyn std::error::Error + Send + Sync>> {
+        key: &str,
+    ) -> Result<String, Box<dyn std::error::Error + Send + Sync>> {
         let mut conn = self.pool.get()?;
-        let res:String = conn.get(key)?;
+        let res: String = conn.get(key)?;
         Ok(res)
     }
 }

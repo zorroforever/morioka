@@ -2,11 +2,11 @@ use crypto::aes::{self, KeySize};
 use crypto::blockmodes::PkcsPadding;
 use crypto::buffer::{ReadBuffer, WriteBuffer};
 use crypto::digest::Digest;
+use crypto::md5::Md5;
 // use crypto::symmetriccipher::{Decryptor, Encryptor};
 use rand::Rng;
-use crypto::md5::Md5;
 
-pub async fn aes_encrypt(plaintext: &[u8], key: &[u8]) -> String  {
+pub async fn aes_encrypt(plaintext: &[u8], key: &[u8]) -> String {
     let random_string: String = rand::thread_rng()
         .sample_iter(rand::distributions::Alphanumeric)
         .take(8)
@@ -42,9 +42,9 @@ pub async fn aes_encrypt(plaintext: &[u8], key: &[u8]) -> String  {
     hex::encode(combined_ciphertext)
 }
 
-pub async fn aes_decrypt(human_read:&str, key: &[u8]) -> String {
+pub async fn aes_decrypt(human_read: &str, key: &[u8]) -> String {
     let random_string_length = 8;
-    let ciphertext  = hex::decode(human_read).unwrap_or(Vec::from(""));
+    let ciphertext = hex::decode(human_read).unwrap_or(Vec::from(""));
     if ciphertext.len() < random_string_length {
         panic!("Invalid ciphertext length!");
     }
@@ -72,23 +72,24 @@ pub async fn aes_decrypt(human_read:&str, key: &[u8]) -> String {
     std::str::from_utf8(&plaintext_without_b).unwrap().to_string()
 }
 
-pub async fn md5_encrypt(human_read:&str) -> String {
+pub async fn md5_encrypt(human_read: &str) -> String {
     let mut hasher = Md5::new();
     hasher.input_str(human_read);
     hasher.result_str()
 }
+
 #[tokio::test]
-async fn  test() {
+async fn test() {
     let plaintext = b"Hello, world!";
     let key = b"8ea8593bb2e44ccda1ccbb1fa07db5b6";
     let ciphertext = aes_encrypt(plaintext, key).await;
-    println!("Encrypted text: {:?}",  &ciphertext );
+    println!("Encrypted text: {:?}", &ciphertext);
     let decrypted_text = aes_decrypt(&ciphertext, key).await;
     println!("Decrypted text: {}", decrypted_text);
 }
 
 #[tokio::test]
-async fn  test_md5() {
+async fn test_md5() {
     let ciphertext = md5_encrypt("ud123").await;
-    println!("Encrypted text: {:?}",  &ciphertext );
+    println!("Encrypted text: {:?}", &ciphertext);
 }
