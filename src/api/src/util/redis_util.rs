@@ -1,5 +1,5 @@
-use r2d2_redis::{r2d2, RedisConnectionManager};
-use r2d2_redis::redis::Commands;
+use r2d2_redis2::{r2d2, RedisConnectionManager};
+use r2d2_redis2::redis::Commands;
 
 pub struct MoriokaRedis {
     pool: r2d2::Pool<RedisConnectionManager>,
