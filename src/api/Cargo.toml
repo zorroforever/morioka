@@ -28,3 +28,6 @@ uuid = { version = "1.8.0", features = [
     "fast-rng",
     "macro-diagnostics",
 ] }
+
+[dev-dependencies]
+tokio = { version = "1.36.0", features = ["full","test-util"] }

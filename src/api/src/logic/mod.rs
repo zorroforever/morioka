@@ -1,2 +1,2 @@
-pub mod fetch_token;
-pub mod union_api;
+pub(crate) mod fetch_token;
+pub(crate) mod union_api;
