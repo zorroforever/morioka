@@ -2,16 +2,16 @@
 use serde::{Serialize,Deserialize};
 use sea_orm::entity::prelude::*;
 
-#[derive(Clone, Debug, PartialEq, DeriveEntityModel, Eq, Serialize, Deserialize)]
-#[sea_orm(table_name = "token_lake")]
+#[derive(Clone, Debug, PartialEq, DeriveEntityModel, Eq,Serialize, Deserialize)]
+#[sea_orm(table_name = "character")]
 pub struct Model {
     #[sea_orm(primary_key)]
     #[serde(skip_deserializing)]
     pub id: i32,
-    pub mix_code: Option<String>,
-    pub token: Option<String>,
-    pub udid: Option<String>,
-    pub expiration_time: Option<DateTime>,
+    pub account_id: Option<i32>,
+    pub character_name: Option<String>,
+    pub character_nickname: Option<String>,
+    pub is_valid: Option<i8>,
     pub create_time: Option<DateTime>,
     pub update_time: Option<DateTime>,
 }

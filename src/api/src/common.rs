@@ -19,14 +19,14 @@ pub struct MoriokaParams {
 #[derive(Debug, Serialize, Deserialize)]
 pub struct MoriokaApiParams {
     api_key: Option<String>,
-    data: Option<String>,
+    data: Option<serde_json::Value>,
 }
 
 impl MoriokaApiParams {
     pub fn get_api_key(&self) -> Option<String> {
         self.api_key.clone().take()
     }
-    pub fn get_data(&self) -> Option<String> {
+    pub fn get_data(&self) -> Option<serde_json::Value> {
         self.data.clone().take()
     }
 }
