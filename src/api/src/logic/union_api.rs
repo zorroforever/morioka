@@ -5,6 +5,7 @@ use serde_json::from_slice;
 use tokio::sync::RwLock as AsyncRwLock;
 
 use crate::common;
+use crate::logic::api_store;
 
 #[post("/v1/api/{token}")]
 pub async fn api(
@@ -29,6 +30,13 @@ pub async fn api(
     if let Some(api_key) = item.get_api_key() {
         match api_key.as_str() {
             "api_check_token" => {}
+            "api_create_character"=>{
+                let s = api_store::api_create_character::handle(
+                    &app_status.db_conn,
+                    item.get_data()
+                ).await;
+                return Ok(HttpResponse::Ok().json(s));
+            }
             _ => {
                 println!("key is invalid!");
             }

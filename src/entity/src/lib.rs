@@ -3,4 +3,5 @@
 pub mod prelude;
 
 pub mod account;
+pub mod character;
 pub mod token_lake;
