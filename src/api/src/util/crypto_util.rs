@@ -3,7 +3,6 @@ use crypto::blockmodes::PkcsPadding;
 use crypto::buffer::{ReadBuffer, WriteBuffer};
 use crypto::digest::Digest;
 use crypto::md5::Md5;
-// use crypto::symmetriccipher::{Decryptor, Encryptor};
 use rand::Rng;
 
 pub async fn aes_encrypt(plaintext: &[u8], key: &[u8]) -> String {
@@ -79,7 +78,7 @@ pub async fn md5_encrypt(human_read: &str) -> String {
 }
 
 #[tokio::test]
-async fn test() {
+async fn test_crypt() {
     let plaintext = b"Hello, world!";
     let key = b"8ea8593bb2e44ccda1ccbb1fa07db5b6";
     let ciphertext = aes_encrypt(plaintext, key).await;

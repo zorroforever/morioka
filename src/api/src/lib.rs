@@ -6,14 +6,11 @@ use actix_web::{
 };
 use listenfd::ListenFd;
 use morioka_service::sea_orm::Database;
-use crate::common::AppState;
-
+mod common;
 mod logic;
 mod util;
-pub mod common;
 use tokio::sync::RwLock as AsyncRwLock;
-use crate::util::redis_util::MoriokaRedis;
-
+use crate::common::AppState;
 #[actix_web::main]
 async fn start(
 ) ->  Result<(), Box<dyn std::error::Error + Send + Sync>> {
@@ -28,7 +25,7 @@ async fn start(
     let server_url = format!("{host}:{port}");
     let conn = Database::connect(&db_url).await.unwrap();
     let redis_url = env::var("REDIS_URL").expect("REDIS_URL is not set in .env file");
-    let redis_box = MoriokaRedis::new(&redis_url);
+    let redis_box = crate::util::MoriokaRedis::new(&redis_url);
     let redis = redis_box.expect("get redis pool error!");
     let app_state = AppState {
         db_conn: conn,

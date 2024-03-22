@@ -1,12 +1,10 @@
 use std::sync::Arc;
 
 use actix_web::{Error, HttpRequest, HttpResponse, post, web};
-use actix_web::web::Data;
-use redis::{Commands, Connection, RedisResult};
 use serde_json::from_slice;
 use tokio::sync::RwLock as AsyncRwLock;
 
-use crate::{common, util};
+use crate::common;
 
 #[post("/v1/api/{token}")]
 pub async fn api(

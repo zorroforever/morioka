@@ -10,7 +10,7 @@ use web::Data;
 
 use morioka_service::Query;
 
-use crate::{common, util};
+use crate::common;
 use crate::util::crypto_util;
 
 #[get("/fetch_token/{mix_id}")]
@@ -36,7 +36,7 @@ pub async fn fetch_token(
     let nice_to_login = Query::check_account(conn, &source_md5_str).await.unwrap_or(false);
     if nice_to_login {
         let uuid = Uuid::new_v4();
-        redis_conn.set_token_with_expiry(
+        let _  = redis_conn.set_token_with_expiry(
             &uuid.to_string(),
             &source_md5_str,
             3600)
