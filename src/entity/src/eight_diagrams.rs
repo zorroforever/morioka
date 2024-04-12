@@ -5,15 +5,19 @@ use serde::Serialize;
 use sea_orm::entity::prelude::*;
 
 #[derive(Clone, Debug, PartialEq, DeriveEntityModel, Eq,Serialize, Deserialize)]
-#[sea_orm(table_name = "character")]
+#[sea_orm(table_name = "eight_diagrams")]
 pub struct Model {
     #[sea_orm(primary_key)]
     #[serde(skip_deserializing)]
     pub id: i32,
-    pub account_id: Option<i32>,
-    pub character_name: Option<String>,
-    pub character_nickname: Option<String>,
-    pub is_valid: Option<i8>,
+    pub d1: i32,
+    pub d2: i32,
+    pub d3: i32,
+    pub d4: i32,
+    pub d5: i32,
+    pub d6: i32,
+    pub d7: i32,
+    pub d8: i32,
     pub create_time: Option<DateTime>,
     pub update_time: Option<DateTime>,
 }

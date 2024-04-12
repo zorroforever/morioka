@@ -28,6 +28,7 @@ uuid = { version = "1.8.0", features = [
     "fast-rng",
     "macro-diagnostics",
 ] }
+chrono = "0.4.34"
 
 [dev-dependencies]
 tokio = { version = "1.36.0", features = ["full","test-util"] }

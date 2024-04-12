@@ -2,4 +2,6 @@
 
 pub use super::account::Entity as Account;
 pub use super::character::Entity as Character;
+pub use super::character_propety::Entity as CharacterPropety;
+pub use super::eight_diagrams::Entity as EightDiagrams;
 pub use super::token_lake::Entity as TokenLake;

@@ -30,3 +30,4 @@ impl MoriokaApiParams {
         self.data.clone().take()
     }
 }
+

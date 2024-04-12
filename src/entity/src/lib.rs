@@ -4,4 +4,6 @@ pub mod prelude;
 
 pub mod account;
 pub mod character;
+pub mod character_propety;
+pub mod eight_diagrams;
 pub mod token_lake;
