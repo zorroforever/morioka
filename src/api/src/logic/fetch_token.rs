@@ -33,15 +33,15 @@ pub async fn fetch_token(
         }
     }
     // try to login account
-    let nice_to_login = Query::check_account(conn, &source_md5_str).await.unwrap_or(false);
-    if nice_to_login {
+    let aid = Query::get_account_by_mix_code(conn, &source_md5_str).await.unwrap();
+    if aid>0 {
         let uuid = Uuid::new_v4();
-        let _  = redis_conn.set_token_with_expiry(
+        let _ = redis_conn.set_token_with_expiry(
             &uuid.to_string(),
             &source_md5_str,
             3600)
             .await;
-        Ok(HttpResponse::Ok().json(json!({"token": uuid.to_string()}).clone()))
+        Ok(HttpResponse::Ok().json(json!({"token": uuid.to_string(),"aid":aid}).clone()))
     } else {
         Ok(HttpResponse::Unauthorized().json("{}"))
     }

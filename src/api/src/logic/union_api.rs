@@ -37,6 +37,13 @@ pub async fn api(
                 ).await;
                 return Ok(HttpResponse::Ok().json(s));
             }
+            "api_list_character"=>{
+                let s = api_store::api_list_character::handle(
+                    &app_status.db_conn,
+                    item.get_data()
+                ).await;
+                return Ok(HttpResponse::Ok().json(s));
+            }
             _ => {
                 println!("key is invalid!");
             }
