@@ -7,3 +7,6 @@ pub mod character;
 pub mod character_propety;
 pub mod eight_diagrams;
 pub mod token_lake;
+pub mod map;
+pub mod map_detail;
+pub mod character_status;
