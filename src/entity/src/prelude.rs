@@ -5,3 +5,6 @@ pub use super::character::Entity as Character;
 pub use super::character_propety::Entity as CharacterPropety;
 pub use super::eight_diagrams::Entity as EightDiagrams;
 pub use super::token_lake::Entity as TokenLake;
+pub use super::map::Entity as Map;
+pub use super::map_detail::Entity as MapDetail;
+pub use super::character_status::Entity as CharacterStatus;

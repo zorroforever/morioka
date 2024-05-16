@@ -1,11 +1,12 @@
-
 use std::default::Default;
-use crate::sea_orm::ActiveValue::Set;
-use sea_orm::{ActiveModelTrait, DatabaseConnection, DbConn, DbErr};
+
+use sea_orm::{ActiveModelTrait, ColumnTrait, DatabaseConnection, DbErr, EntityTrait};
 use sea_orm::prelude::{DateTime, Decimal};
 
 use morioka_entity::{character, character_propety};
-
+use ::morioka_entity::{character_status, character_status::Entity as Character_status};
+use crate::sea_orm::ActiveValue::Set;
+use sea_orm::QueryFilter;
 pub struct Excute;
 impl Excute{
     pub async fn make_new_character(
@@ -22,7 +23,7 @@ impl Excute{
         bazi_hour_tiangan: i32,
         bazi_hour_dizhi: i32,
         create_time: DateTime,
-    ) -> Result<Option<String>, DbErr> {
+    ) -> Result<i32, DbErr> {
         let new_character = character::ActiveModel {
             account_id: Set(Some(acc_id).to_owned()),
             character_name: Set(ch_name),
@@ -50,6 +51,43 @@ impl Excute{
            ..Default::default()
        };
         let md2= new_character_propety.insert(db).await?;
-        Ok(Some(format!("make new character OK,{:?}",md2)))
+        Ok(new_character_id)
+    }
+
+    pub async fn update_character_position_on_map(
+        db: &DatabaseConnection,
+        map_id: i32,
+        character_id: i32,
+        position_x: i32,
+        position_y: i32,
+        position_z: i32,
+    )-> Result<(), DbErr> {
+        // find character data on character_status table by character_id
+        let character_status = Character_status::find()
+            .filter(character_status::Column::CharacterId.eq(character_id))
+            .one(db)
+            .await?;
+        if character_status.is_some() {
+            let _ = character_status::ActiveModel {
+                map_id: Set(Some(map_id)),
+                character_id: Set(Some(character_id)),
+                x: Set(Some(position_x)),
+                y: Set(Some(position_y)),
+                z: Set(Some(position_z)),
+                ..Default::default()
+            }.update(db).await?;
+        } else {
+             let new_character_status = character_status::ActiveModel {
+                map_id: Set(Some(map_id)),
+                character_id: Set(Some(character_id)),
+                x: Set(Some(position_x)),
+                y: Set(Some(position_y)),
+                z: Set(Some(position_z)),
+                ..Default::default()
+            };
+            let _ = new_character_status.insert(db).await?;
+        }
+
+    Ok(())
     }
 }

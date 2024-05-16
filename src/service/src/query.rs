@@ -3,6 +3,9 @@ use sea_orm::*;
 use ::morioka_entity::{token_lake, token_lake::Entity as TokenLake};
 use ::morioka_entity::{account, account::Entity as Account};
 use ::morioka_entity::{character, character::Entity as Character};
+use ::morioka_entity::{map, map::Entity as Map};
+use ::morioka_entity::{map_detail, map_detail::Entity as Map_detail};
+
 pub struct Query;
 
 impl Query {
@@ -59,5 +62,23 @@ impl Query {
         Ok(res)
 
     }
+    pub async fn load_map_by_mid(
+        db: &DbConn,
+        mid: i32,
+    ) -> Result<map::Model, DbErr> {
+        let map = Map::find()
+            .filter(map::Column::Id.eq(mid))
+            .one(db).await?;
+        Ok(map.unwrap())
+    }
 
+    pub async fn load_map_detail_by_mid(
+        db: &DbConn,
+        mid: i32,
+    ) -> Result<Vec<map_detail::Model>, DbErr> {
+            let map_detail = Map_detail::find()
+            .filter(map_detail::Column::Id.eq(mid))
+            .all(db).await?;
+        Ok(map_detail)
+    }
 }

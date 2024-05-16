@@ -1,11 +1,9 @@
-use serde_json::json;
-use std::sync::Arc;
-use actix_web::web;
 use morioka_service::Excute;
-use crate::common;
-use tokio::sync::RwLock as AsyncRwLock;
 use morioka_service::sea_orm::DatabaseConnection;
-use crate::util::calculate_bazi;
+use serde_json;
+use serde_json::json;
+
+use crate::util::{calculate_bazi, map_util, MoriokaPosition};
 
 pub async fn handle(
     db: &DatabaseConnection,
@@ -13,7 +11,8 @@ pub async fn handle(
 ) -> String {
     let json_str: serde_json::Value = option.expect("wrong param!");
     let bazi = calculate_bazi().await.unwrap();
-    let res = Excute::make_new_character(
+    // init character
+    let character_id = Excute::make_new_character(
         db,
         json_str["aid"].as_i64().map(|v| v as i32).unwrap_or_default().to_owned(),
         Some(json_str["ch_name"].as_str().unwrap_or_default().to_string()),
@@ -28,6 +27,13 @@ pub async fn handle(
         bazi.hour_dizhi,
         chrono::Local::now().naive_local(),
     ).await;
-
-    res.unwrap().unwrap()
+    let ch_id = character_id.unwrap();
+    // init map ,for id 1
+    let current_map = map_util::load_map(db,1).await;
+    // set (0,0,0) as character position on current map
+    let position = MoriokaPosition { x: 0, y: 0, z: 0 };
+    let _ = map_util::set_character_position_on_map(db, ch_id,current_map.mid, position.clone()).await;
+    json!({ "cid": ch_id , "map_id": current_map.mid , "position": position }).to_string()
+    // "Ok".to_string()
 }
+
