@@ -62,20 +62,25 @@ pub async fn calculate_bazi(
     let month_bazi = format!("{}{}", TIANGAN[month_tiangan_index as usize], DIZHI[month as usize - 1]);
 
     let day_tiangan_index = ((year_tiangan_index * 5 + month as i32 + day as i32 - 2) % 10 + 10) % 10;
-    let day_bazi = format!("{}{}", TIANGAN[day_tiangan_index as usize], DIZHI[(day - 1) as usize]);
+    let day_dizhi_index = ((year_dizhi_index * 5 + month as i32 + day as i32 - 2) % 12 + 12) % 12;
+    let day_bazi = format!("{}{}", TIANGAN[day_tiangan_index as usize], DIZHI[day_dizhi_index as usize]);
+    // let day_bazi = format!("{}{}", TIANGAN[day_tiangan_index as usize], DIZHI[(day - 1) as usize]);
 
     let hour_tiangan_index = ((day_tiangan_index * 2 + hour as i32 / 2) % 10 + 10) % 10;
-    let hour_bazi = format!("{}{}", TIANGAN[hour_tiangan_index as usize], DIZHI[hour as usize / 2]);
+    let hour_dizhi_index = ((day_dizhi_index * 2 + hour as i32 / 2) % 12 + 12) % 12;
+    let hour_bazi = format!("{}{}", TIANGAN[hour_tiangan_index as usize], DIZHI[hour_dizhi_index as usize]);
+
+    // let hour_bazi = format!("{}{}", TIANGAN[hour_tiangan_index as usize], DIZHI[hour as usize / 2]);
 
     let res = Bazi{
-        year_tiangan:year_tiangan_index,
-        year_dizhi:year_dizhi_index,
-        month_tiangan:year_tiangan_index,
-        month_dizhi:year_dizhi_index,
-        day_tiangan:year_tiangan_index,
-        day_dizhi:year_dizhi_index,
-        hour_tiangan:year_tiangan_index,
-        hour_dizhi:year_dizhi_index,
+        year_tiangan: year_tiangan_index,
+        year_dizhi: year_dizhi_index,
+        month_tiangan: month_tiangan_index,
+        month_dizhi: (month - 1) as i32,
+        day_tiangan: day_tiangan_index,
+        day_dizhi: day_dizhi_index,
+        hour_tiangan: hour_tiangan_index,
+        hour_dizhi: hour_dizhi_index,
     };
    Ok(res)
 }

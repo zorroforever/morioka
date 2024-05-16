@@ -1,6 +1,7 @@
 use morioka_service::Excute;
 use morioka_service::sea_orm::DatabaseConnection;
 use serde_json;
+use serde_json::json;
 
 use crate::util::{calculate_bazi, map_util, MoriokaPosition};
 
@@ -30,8 +31,9 @@ pub async fn handle(
     // init map ,for id 1
     let current_map = map_util::load_map(db,1).await;
     // set (0,0,0) as character position on current map
-    let postion = MoriokaPosition { x: 0, y: 0, z: 0 };
-    let _ = map_util::set_character_position_on_map(db, 1,ch_id, postion).await;
-    "Ok".to_string()
+    let position = MoriokaPosition { x: 0, y: 0, z: 0 };
+    let _ = map_util::set_character_position_on_map(db, ch_id,current_map.mid, position.clone()).await;
+    json!({ "cid": ch_id , "map_id": current_map.mid , "position": position }).to_string()
+    // "Ok".to_string()
 }
 

@@ -1,20 +1,22 @@
+use serde::{Deserialize, Serialize};
 use morioka_service::Query;
 use morioka_service::Excute;
-use morioka_service::sea_orm::DatabaseConnection;
-
-pub struct MoriokaPosition{
+use morioka_service::sea_orm::{DatabaseConnection, DeriveEntityModel};
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct MoriokaPosition {
     pub(crate) x:i32,
     pub(crate) y:i32,
     pub(crate) z:i32,
 }
-
+#[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct MoriokaMapDetail{
     position:MoriokaPosition,
     object_id:i32,
     acc_able:i32,
 }
+#[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct MoriokaMap{
-    mid:i32,
+    pub(crate) mid:i32,
     m_width:i32,
     m_height:i32,
     m_length:i32,
