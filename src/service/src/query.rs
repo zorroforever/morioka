@@ -3,6 +3,7 @@ use sea_orm::*;
 use ::morioka_entity::{token_lake, token_lake::Entity as TokenLake};
 use ::morioka_entity::{account, account::Entity as Account};
 use ::morioka_entity::{character, character::Entity as Character};
+use ::morioka_entity::{character_status, character_status::Entity as CharacterStatus};
 use ::morioka_entity::{map, map::Entity as Map};
 use ::morioka_entity::{map_detail, map_detail::Entity as Map_detail};
 
@@ -80,5 +81,29 @@ impl Query {
             .filter(map_detail::Column::Id.eq(mid))
             .all(db).await?;
         Ok(map_detail)
+    }
+    pub async fn get_character_status_by_character_id(
+        db: &DbConn,
+        cid: i32,
+    ) -> Result<character_status::Model, DbErr> {
+        let ch_status = CharacterStatus::find()
+            .filter(character_status::Column::CharacterId.eq(cid))
+            .one(db).await?;
+        Ok(ch_status.unwrap())
+    }
+    pub async fn get_map_detail_by_position(
+             db: &DbConn,
+             mid: i32,
+             x: i32,
+             y: i32,
+             z: i32,
+    )-> Result<map_detail::Model, DbErr> {
+        let map_detail = Map_detail::find()
+            .filter(map_detail::Column::Mid.eq(mid))
+            .filter(map_detail::Column::X.eq(x))
+            .filter(map_detail::Column::Y.eq(y))
+            .filter(map_detail::Column::Z.eq(z))
+            .one(db).await?;
+        Ok(map_detail.unwrap())
     }
 }

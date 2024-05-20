@@ -44,6 +44,12 @@ pub async fn api(
                 ).await;
                 return Ok(HttpResponse::Ok().json(s));
             }
+            "api_show_around"=> {
+                let s = api_store::api_show_around::handle(
+                    &app_status.db_conn,
+                    item.get_data()
+                ).await;
+            }
             _ => {
                 println!("key is invalid!");
             }
