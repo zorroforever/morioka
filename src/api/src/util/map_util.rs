@@ -87,13 +87,22 @@ pub async fn get_map_position_by_character_id(
         db,
         character_id,
     ).await.unwrap();
-
-    let res = MoriokaPosition{
-        x:character_status.x.unwrap_or(0),
-        y:character_status.y.unwrap_or(0),
-        z:character_status.z.unwrap_or(0),
-    };
-     (character_status.map_id.unwrap_or(0),res)
+    if let Some(_value)    = character_status {
+        let res = MoriokaPosition{
+            x:_value.x.unwrap_or(0),
+            y:_value.y.unwrap_or(0),
+            z:_value.z.unwrap_or(0),
+        };
+        (_value.map_id.unwrap_or(0),res)
+    }else {
+        (0,MoriokaPosition{x:0,y:0,z:0})
+    }
+    // let res = MoriokaPosition{
+    //     x:character_status.x.unwrap_or(0),
+    //     y:character_status.y.unwrap_or(0),
+    //     z:character_status.z.unwrap_or(0),
+    // };
+    //  (character_status.map_id.unwrap_or(0),res)
 }
 
 pub async fn get_map_detail_by_position(
@@ -107,8 +116,8 @@ pub async fn get_map_detail_by_position(
         position.x,
         position.y,
         position.z,
-    ).await;
-    if let (Ok(_value))    = map_detail {
+    ).await.unwrap();
+    if let (Some(_value))    = map_detail {
         let res = MoriokaMapDetail{
             position:MoriokaPosition{
                 x:_value.x.unwrap_or(0),

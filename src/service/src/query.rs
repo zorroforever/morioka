@@ -47,8 +47,11 @@ impl Query {
             .filter(account::Column::MixCode.eq(mix_code))
             .filter(account::Column::IsValid.eq(true))
             .one(db).await?;
-        let res = acc_model.unwrap();
-       Ok(res.id)
+        if let Some(_v) = acc_model {
+            return Ok(_v.id);
+        } else {
+            return Ok(-1);
+        }
     }
 
     pub async fn list_characters_by_account_id(
@@ -85,11 +88,11 @@ impl Query {
     pub async fn get_character_status_by_character_id(
         db: &DbConn,
         cid: i32,
-    ) -> Result<character_status::Model, DbErr> {
+    ) -> Result<Option<character_status::Model>, DbErr> {
         let ch_status = CharacterStatus::find()
             .filter(character_status::Column::CharacterId.eq(cid))
             .one(db).await?;
-        Ok(ch_status.unwrap())
+        Ok(ch_status)
     }
     pub async fn get_map_detail_by_position(
              db: &DbConn,
@@ -97,13 +100,13 @@ impl Query {
              x: i32,
              y: i32,
              z: i32,
-    )-> Result<map_detail::Model, DbErr> {
+    )-> Result<Option<map_detail::Model>, DbErr> {
         let map_detail = Map_detail::find()
             .filter(map_detail::Column::Mid.eq(mid))
             .filter(map_detail::Column::X.eq(x))
             .filter(map_detail::Column::Y.eq(y))
             .filter(map_detail::Column::Z.eq(z))
             .one(db).await?;
-        Ok(map_detail.unwrap())
+        Ok(map_detail)
     }
 }
